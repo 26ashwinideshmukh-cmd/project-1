@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-frame: #111111;
+  --color-canvas: #F5F5F3;
+  --color-panel: #FDFDFD;
+  --color-subtle: #E6E6E2;
+  --color-accent: #D94826;
+  --color-fatal: #D94826;
+  --color-smell: #D97706;
+  --color-opt: #15803D;
+
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+body {
+  background-color: var(--color-canvas, #F5F5F3);
+  background-image: 
+    linear-gradient(to right, rgba(17, 17, 17, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 17, 17, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  font-family: var(--font-mono, monospace);
+  color: var(--color-frame, #111111);
+}
+
+.font-display {
+  font-family: var(--font-display, sans-serif);
+}
+
+/* Blueprint drafting drop shadows */
+.blueprint-shadow {
+  box-shadow: 4px 4px 0px #111111;
+}
+
+.blueprint-shadow-sm {
+  box-shadow: 2px 2px 0px #111111;
+}
+
+.blueprint-shadow-accent {
+  box-shadow: 3px 3px 0px #D94826;
+}
+
+/* Custom thin black-on-light scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F5F5F3;
+  border-left: 1px solid #E6E6E2;
+}
+::-webkit-scrollbar-thumb {
+  background: #111111;
+}
+
+@keyframes spinSlash {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.spin-slash {
+  animation: spinSlash 1s linear infinite;
+}

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Roaster — Visual Design System & Spec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            frame: '#111111',
+            canvas: '#F5F5F3',
+            panel: '#FDFDFD',
+            subtle: '#E6E6E2',
+            accent: '#D94826',
+            fatal: '#D94826',
+            smell: '#D97706',
+            opt: '#15803D',
+          },
+          fontFamily: {
+            display: ['"Space Grotesk"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --color-frame: #111111;
+      --color-canvas: #F5F5F3;
+      --color-panel: #FDFDFD;
+      --color-subtle: #E6E6E2;
+      --color-accent: #D94826;
+      --color-fatal: #D94826;
+      --color-smell: #D97706;
+      --color-opt: #15803D;
+    }
+
+    body {
+      background-color: var(--color-canvas);
+      background-image: 
+        linear-gradient(to right, rgba(17, 17, 17, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(17, 17, 17, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--color-frame);
+    }
+
+    .font-display {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .blueprint-shadow {
+      box-shadow: 4px 4px 0px #111111;
+    }
+
+    .blueprint-shadow-sm {
+      box-shadow: 2px 2px 0px #111111;
+    }
+
+    .blueprint-shadow-accent {
+      box-shadow: 3px 3px 0px #D94826;
+    }
+
+    /* Custom thin scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F5F5F3;
+      border-left: 1px solid #E6E6E2;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #111111;
+    }
+
+    @keyframes spinSlash {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .spin-slash {
+      display: inline-block;
+      animation: spinSlash 1s linear infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+
+  <!-- TOP NAV / PROTOTYPE CONTROLLER -->
+  <header class="w-full max-w-[1360px] mb-6 flex flex-wrap items-center justify-between gap-4 bg-[#FDFDFD] border-2 border-[#111111] p-3 blueprint-shadow">
+    <div class="flex items-center gap-3">
+      <span class="inline-block w-3 h-3 bg-[#D94826]"></span>
+      <h1 class="font-display font-bold text-sm tracking-wider uppercase">Visual Design Spec // Code Roaster</h1>
+      <span class="text-xs px-2 py-0.5 bg-[#111111] text-white font-mono">STITCH REF</span>
+    </div>
+    
+    <!-- State Toggles -->
+    <div class="flex flex-wrap items-center gap-2 text-xs">
+      <span class="text-neutral-500 uppercase tracking-widest text-[10px] mr-1">SWITCH PREVIEW:</span>
+      <button onclick="switchScreen('screen-main')" id="btn-main" class="px-3 py-1 font-mono font-medium border border-[#111111] bg-[#111111] text-white">01 // SCREEN: EMPTY STATE</button>
+      <button onclick="switchScreen('screen-results')" id="btn-results" class="px-3 py-1 font-mono font-medium border border-[#111111] bg-[#FDFDFD] text-[#111111] hover:bg-neutral-100">02 // SCREEN: RESULTS VIEW</button>
+      <button onclick="switchScreen('screen-loading')" id="btn-loading" class="px-3 py-1 font-mono font-medium border border-[#111111] bg-[#FDFDFD] text-[#111111] hover:bg-neutral-100">03 // STATE: LOADING</button>
+      <button onclick="switchScreen('screen-error')" id="btn-error" class="px-3 py-1 font-mono font-medium border border-[#111111] bg-[#FDFDFD] text-[#111111] hover:bg-neutral-100">04 // STATE: ERROR</button>
+      <button onclick="switchScreen('screen-tokens')" id="btn-tokens" class="px-3 py-1 font-mono font-medium border border-[#D94826] text-[#D94826] bg-[#FDFDFD] hover:bg-orange-50 font-bold">05 // DESIGN TOKENS & SPECS</button>
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- MAIN WORKSTATION WRAPPER -->
+  <!-- ======================================================== -->
+  <main id="workstation-card" class="w-full max-w-[1360px] bg-[#FDFDFD] border-2 border-[#111111] blueprint-shadow flex flex-col mb-12">
+    
+    <!-- 1. TOP BAR -->
+    <header class="border-b-2 border-[#111111] bg-[#FDFDFD] px-4 py-3 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <!-- Left: App Identity -->
+      <div class="flex items-center gap-3">
+        <span class="font-display font-bold text-xl tracking-[0.18em] uppercase text-[#111111]">
+          CODE ROASTER
+        </span>
+        <span class="text-xs px-2 py-0.5 border border-[#111111] font-mono font-semibold text-[#111111] bg-[#F5F5F3]">
+          v3
+        </span>
+      </div>
+
+      <!-- Right: Controls -->
+      <div class="flex flex-wrap items-center gap-4 text-xs font-mono">
+        <!-- Roast Level Radio Group -->
+        <div class="flex items-center gap-2 border border-[#E6E6E2] bg-[#F5F5F3] px-2.5 py-1.5">
+          <span class="text-neutral-500 uppercase tracking-wider text-[10px]">Level:</span>
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="roastLevel" value="dry" class="accent-[#111111]">
+            <span class="text-neutral-700">Dry</span>
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="roastLevel" value="sharp" class="accent-[#111111]">
+            <span class="text-neutral-700">Sharp</span>
+          </label>
+          <label class="flex items-center gap-1 cursor-pointer font-bold text-[#D94826]">
+            <input type="radio" name="roastLevel" value="savage" checked class="accent-[#D94826]">
+            <span>Savage</span>
+          </label>
+        </div>
+
+        <!-- Language Dropdown -->
+        <div class="flex items-center gap-1.5">
+          <span class="text-neutral-500 uppercase tracking-wider text-[10px]">Lang:</span>
+          <div class="relative">
+            <select class="appearance-none bg-[#FDFDFD] border border-[#111111] px-3 py-1.5 pr-7 font-mono text-xs font-medium cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#111111]">
+              <option value="python" selected>Python (.py)</option>
+              <option value="javascript">JavaScript (.js)</option>
+              <option value="typescript">TypeScript (.ts)</option>
+              <option value="java">Java (.java)</option>
+              <option value="c">C (.c)</option>
+              <option value="cpp">C++ (.cpp)</option>
+              <option value="go">Go (.go)</option>
+              <option value="rust">Rust (.rs)</option>
+            </select>
+            <span class="absolute right-2 top-2 pointer-events-none text-neutral-600 text-[10px]">▼</span>
+          </div>
+        </div>
+
+        <!-- Error Drawer Toggle Button -->
+        <button id="error-toggle-btn" onclick="toggleErrorDrawer()" class="px-2.5 py-1.5 border border-dashed border-[#111111] hover:bg-neutral-100 flex items-center gap-1 transition-colors">
+          <span id="error-toggle-icon">+</span>
+          <span class="uppercase tracking-wider text-[11px]">ERROR MESSAGE</span>
+        </button>
+
+        <!-- Primary Action Button -->
+        <button id="roast-btn" class="bg-[#111111] text-white hover:bg-[#D94826] px-4 py-2 font-mono font-bold tracking-wider uppercase transition-colors flex items-center gap-2.5 blueprint-shadow-sm active:translate-x-[1px] active:translate-y-[1px]">
+          <span>ROAST MY CODE</span>
+          <span class="bg-neutral-800 text-[10px] px-1.5 py-0.5 border border-neutral-600 text-neutral-300 font-normal">Ctrl ⏎</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- COLLAPSIBLE ERROR MESSAGE DRAWER -->
+    <div id="error-drawer" class="hidden border-b-2 border-[#111111] bg-[#F5F5F3] p-4 transition-all">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-mono uppercase tracking-widest text-neutral-600">
+          Attach Terminal Traceback / Compiler Error (Optional)
+        </span>
+        <button onclick="toggleErrorDrawer()" class="text-xs font-mono text-neutral-500 hover:text-black">
+          Dismiss ✕
+        </button>
+      </div>
+      <textarea rows="2" placeholder="Traceback (most recent call last):&#10;  File 'solution.py', line 4, in calculate_average&#10;TypeError: unsupported operand type(s) for +=: 'int' and 'list'" class="w-full bg-[#FDFDFD] border border-[#111111] p-2.5 font-mono text-xs focus:outline-none focus:border-[#D94826]"></textarea>
+    </div>
+
+    <!-- 2. TWO-COLUMN WORKSTATION BODY -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
+      
+      <!-- LEFT COLUMN: CODE EDITOR (~55%) -->
+      <section class="lg:col-span-7 border-b-2 lg:border-b-0 lg:border-r-2 border-[#111111] flex flex-col bg-[#FDFDFD]">
+        
+        <!-- Editor Header Strip (40px) -->
+        <div class="h-10 border-b border-[#E6E6E2] bg-[#F5F5F3] px-4 flex items-center justify-between text-xs font-mono">
+          <div class="flex items-center gap-3">
+            <span class="text-neutral-500 uppercase tracking-wider text-[11px]">INPUT // SRC</span>
+            <span class="font-bold text-[#111111] uppercase tracking-wide">Your Code</span>
+          </div>
+          <div class="flex items-center gap-4 text-[11px]">
+            <button class="text-neutral-600 hover:text-[#D94826] underline decoration-neutral-400 uppercase tracking-wider">SAMPLE BUG</button>
+            <span class="text-neutral-300">|</span>
+            <button class="text-neutral-600 hover:text-black uppercase tracking-wider">CLEAR</button>
+          </div>
+        </div>
+
+        <!-- Editor Gutter + Textarea Area -->
+        <div class="flex-1 flex overflow-hidden font-mono text-xs relative bg-[#FDFDFD]">
+          
+          <!-- Line Numbers Gutter -->
+          <div class="w-12 bg-[#F5F5F3] border-r border-[#E6E6E2] py-3 text-right pr-3 select-none text-neutral-400 font-mono leading-6">
+            <div>01</div>
+            <div>02</div>
+            <div>03</div>
+            <div id="gutter-line-4" class="text-[#D94826] font-bold bg-[#D94826]/10 -mr-3 pr-3 border-r-2 border-[#D94826]">04</div>
+            <div>05</div>
+            <div>06</div>
+            <div>07</div>
+            <div>08</div>
+            <div>09</div>
+            <div>10</div>
+            <div>11</div>
+            <div>12</div>
+          </div>
+
+          <!-- Code Content Area -->
+          <div class="flex-1 p-3 overflow-x-auto leading-6 font-mono text-neutral-900 bg-[#FDFDFD]">
+            <div class="text-neutral-400 italic">// Sample code with a sneaky bug</div>
+            <div><span class="text-blue-700 font-semibold">def</span> <span class="text-yellow-700 font-semibold">calculate_average</span>(numbers):</div>
+            <div class="pl-4">total = <span class="text-purple-700">0</span></div>
+            <div class="pl-4">for number in numbers:</div>
+            <div id="code-line-4" class="pl-8 bg-[#D94826]/10 -mx-3 px-3 border-l-2 border-[#D94826] flex items-center justify-between">
+              <span>total += numbers  <span class="text-[#D94826] font-bold">// &lt;-- ERROR ON THIS LINE</span></span>
+              <span class="text-[10px] text-[#D94826] font-mono uppercase bg-[#D94826]/20 px-1">LINE 04</span>
+            </div>
+            <div class="pl-4"><span class="text-blue-700 font-semibold">return</span> total / len(numbers)</div>
+            <div>&nbsp;</div>
+            <div><span class="text-neutral-500"># Run test</span></div>
+            <div>scores = [<span class="text-purple-700">85</span>, <span class="text-purple-700">92</span>, <span class="text-purple-700">78</span>, <span class="text-purple-700">90</span>]</div>
+            <div>print(<span class="text-green-700">f"Average: {calculate_average(scores)}"</span>)</div>
+          </div>
+        </div>
+
+        <!-- Editor Status Strip (Bottom) -->
+        <div class="h-8 border-t border-[#E6E6E2] bg-[#F5F5F3] px-4 flex items-center justify-between text-[11px] font-mono text-neutral-600">
+          <div>Ln 4, Col 18 · Python (py)</div>
+          <div class="hidden sm:block text-neutral-500">UTF-8 · Tab Size: 4 · 247 chars</div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: REPORT PANEL (~45%) -->
+      <section class="lg:col-span-5 flex flex-col bg-[#FDFDFD]">
+        
+        <!-- Report Header Strip (40px) -->
+        <div class="h-10 border-b border-[#E6E6E2] bg-[#F5F5F3] px-4 flex items-center justify-between text-xs font-mono">
+          <div class="flex items-center gap-3">
+            <span class="text-neutral-500 uppercase tracking-wider text-[11px]">AUDIT // REPORT</span>
+            <span class="font-bold text-[#111111] uppercase tracking-wide">Roast Report</span>
+          </div>
+          <div id="report-state-badge" class="text-[10px] font-mono uppercase px-2 py-0.5 border border-[#111111] bg-[#111111] text-white">
+            STATE: RESULTS
+          </div>
+        </div>
+
+        <!-- REPORT PANEL CONTENT STATES CONTAINER -->
+        <div class="flex-1 overflow-y-auto max-h-[640px] flex flex-col">
+
+          <!-- ============================================== -->
+          <!-- STATE A: EMPTY STATE -->
+          <!-- ============================================== -->
+          <div id="view-empty" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center min-h-[480px]">
+            <div class="w-16 h-16 border-2 border-dashed border-[#111111] flex items-center justify-center text-2xl font-mono text-neutral-400 mb-4 bg-[#F5F5F3]">
+              { }
+            </div>
+            <h3 class="font-display font-bold text-base uppercase tracking-wider text-[#111111] mb-2">
+              Awaiting Code Submission
+            </h3>
+            <p class="font-mono text-xs text-neutral-500 max-w-xs leading-relaxed mb-6">
+              Paste your code on the left, select your roast intensity, and click <span class="text-black font-semibold">"ROAST MY CODE"</span> or hit <kbd class="bg-[#F5F5F3] border border-[#111111] px-1 text-[10px]">Ctrl+Enter</kbd>.
+            </p>
+            <div class="text-[10px] font-mono text-neutral-400 uppercase tracking-widest border-t border-[#E6E6E2] pt-4 w-48">
+              // READY FOR INPUT //
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- STATE B: LOADING STATE -->
+          <!-- ============================================== -->
+          <div id="view-loading" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center min-h-[480px]">
+            <div class="w-16 h-16 border-2 border-[#111111] flex items-center justify-center text-3xl font-mono text-[#D94826] mb-4 bg-[#F5F5F3] blueprint-shadow-sm">
+              <span class="spin-slash">/</span>
+            </div>
+            <h3 class="font-display font-bold text-base uppercase tracking-wider text-[#111111] mb-2 animate-pulse">
+              Analyzing Code...
+            </h3>
+            <p class="font-mono text-xs text-neutral-500 max-w-xs leading-relaxed mb-6">
+              Evaluating computational complexity, spotting syntax crimes, and cooking up spicy Hinglish roasts...
+            </p>
+            <div class="w-48 h-1.5 bg-[#E6E6E2] overflow-hidden">
+              <div class="h-full bg-[#111111] animate-pulse w-3/4"></div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- STATE C: ERROR STATE -->
+          <!-- ============================================== -->
+          <div id="view-error" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center min-h-[480px]">
+            <div class="w-16 h-16 border-2 border-[#D94826] flex items-center justify-center text-3xl font-mono text-[#D94826] mb-4 bg-orange-50 blueprint-shadow-accent">
+              !
+            </div>
+            <h3 class="font-display font-bold text-base uppercase tracking-wider text-[#D94826] mb-2">
+              Analysis Failed
+            </h3>
+            <p class="font-mono text-xs text-neutral-700 max-w-xs leading-relaxed mb-6 bg-[#F5F5F3] p-3 border border-[#E6E6E2]">
+              Gemini API rate limit exceeded or server response timed out. Please check connection and try again.
+            </p>
+            <button class="bg-[#111111] text-white hover:bg-[#D94826] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider blueprint-shadow-sm transition-colors">
+              RETRY ANALYSIS ↵
+            </button>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- STATE D: RESULTS VIEW (SECOND SCREEN) -->
+          <!-- ============================================== -->
+          <div id="view-results" class="flex-1 p-5 space-y-6">
+            
+            <!-- SECTION 01: ROAST -->
+            <div class="space-y-2">
+              <div class="border-b border-[#111111] pb-1 flex items-center justify-between">
+                <span class="font-mono font-bold text-xs tracking-widest uppercase text-[#111111]">
+                  01 // ROAST
+                </span>
+                <span class="text-[10px] font-mono text-neutral-500 uppercase">STYLE: SAVAGE 🔥</span>
+              </div>
+              <div class="bg-[#F5F5F3] border-l-4 border-[#D94826] border-y border-r border-[#E6E6E2] p-4 text-xs font-mono leading-relaxed text-[#111111]">
+                <p class="italic text-sm">
+                  "Bhai, yeh loop har baar poori list add kar raha hai 😅. Python bhi soch raha hoga ki kya chal raha hai 🤦. Total calculate karna tha ya list duplication ka world record banana tha? 💀 Ek single 's' ne poore program ki izzat mitti me mila di!"
+                </p>
+              </div>
+            </div>
+
+            <!-- SECTION 02: WHAT'S WRONG -->
+            <div class="space-y-3">
+              <div class="border-b border-[#111111] pb-1 flex items-center justify-between">
+                <span class="font-mono font-bold text-xs tracking-widest uppercase text-[#111111]">
+                  02 // WHAT'S WRONG
+                </span>
+                <span class="text-[10px] font-mono text-neutral-500 uppercase">2 ISSUES DETECTED</span>
+              </div>
+
+              <!-- Issue Card 1: Fatal Bug -->
+              <div class="border border-[#111111] bg-[#FDFDFD] p-3 blueprint-shadow-sm space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 bg-[#111111] text-white flex items-center justify-center text-[10px] font-bold">01</span>
+                    <span class="font-bold text-[#111111]">LINE 04</span>
+                    <span class="bg-[#D94826]/10 text-[#D94826] border border-[#D94826] px-1.5 py-0.2 text-[10px] font-bold uppercase tracking-wider">
+                      FATAL BUG
+                    </span>
+                  </div>
+                  <span class="text-[10px] text-neutral-500 font-mono truncate max-w-[150px]">TypeError: += 'int' and 'list'</span>
+                </div>
+
+                <!-- Problem Snippet -->
+                <div class="border-l-2 border-[#D94826] bg-[#F5F5F3] px-2.5 py-1.5 font-mono text-xs text-neutral-800">
+                  <code>total += numbers</code>
+                </div>
+
+                <!-- Diagnosis & Expected -->
+                <div class="space-y-1 text-xs font-mono pt-1">
+                  <div class="text-[#D94826] flex items-start gap-1.5 leading-snug">
+                    <span class="font-bold">✕</span>
+                    <span><strong>Diagnosis:</strong> Loop ke andar singular `number` ki jagah poori `numbers` list ko integer me add kar rahe ho 🤦</span>
+                  </div>
+                  <div class="text-[#15803D] flex items-start gap-1.5 leading-snug">
+                    <span class="font-bold">✓</span>
+                    <span><strong>Expected:</strong> `total += number` use karo taki individual elements add hon ✅</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Issue Card 2: Code Smell -->
+              <div class="border border-[#111111] bg-[#FDFDFD] p-3 blueprint-shadow-sm space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 bg-[#111111] text-white flex items-center justify-center text-[10px] font-bold">02</span>
+                    <span class="font-bold text-[#111111]">LINE 01</span>
+                    <span class="bg-[#D97706]/10 text-[#D97706] border border-[#D97706] px-1.5 py-0.2 text-[10px] font-bold uppercase tracking-wider">
+                      CODE SMELL
+                    </span>
+                  </div>
+                  <span class="text-[10px] text-neutral-500 font-mono truncate max-w-[150px]">ZeroDivisionError Hazard</span>
+                </div>
+
+                <div class="border-l-2 border-[#D97706] bg-[#F5F5F3] px-2.5 py-1.5 font-mono text-xs text-neutral-800">
+                  <code>def calculate_average(numbers):</code>
+                </div>
+
+                <div class="space-y-1 text-xs font-mono pt-1">
+                  <div class="text-[#D97706] flex items-start gap-1.5 leading-snug">
+                    <span class="font-bold">✕</span>
+                    <span><strong>Diagnosis:</strong> Agar user ne empty list pass ki to `len(numbers)` zero hoga aur division crash kar dega 🔥</span>
+                  </div>
+                  <div class="text-[#15803D] flex items-start gap-1.5 leading-snug">
+                    <span class="font-bold">✓</span>
+                    <span><strong>Expected:</strong> Function ke start me `if not numbers: return 0` guard condition lagao ✅</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 03: FIX -->
+            <div class="space-y-2">
+              <div class="border-b border-[#111111] pb-1 flex items-center justify-between">
+                <span class="font-mono font-bold text-xs tracking-widest uppercase text-[#111111]">
+                  03 // FIX
+                </span>
+                <span class="text-[10px] font-mono text-[#15803D] font-bold uppercase">CORRECTED CODE</span>
+              </div>
+
+              <div class="border border-[#111111] bg-[#FDFDFD] blueprint-shadow-sm overflow-hidden">
+                <!-- Filename strip -->
+                <div class="bg-[#F5F5F3] border-b border-[#E6E6E2] px-3 py-1.5 flex items-center justify-between text-[11px] font-mono">
+                  <span class="font-bold text-neutral-700">solution.py</span>
+                  <span class="text-[10px] text-[#15803D] font-semibold uppercase">READY TO APPLY</span>
+                </div>
+                <pre class="p-3 font-mono text-xs text-neutral-900 leading-5 bg-[#FDFDFD] overflow-x-auto"><code><span class="text-blue-700 font-semibold">def</span> <span class="text-yellow-700 font-semibold">calculate_average</span>(numbers):
+    <span class="text-neutral-400"># Guard against empty list</span>
+    <span class="text-blue-700 font-semibold">if not</span> numbers:
+        <span class="text-blue-700 font-semibold">return</span> <span class="text-purple-700">0.0</span>
+    
+    total = <span class="text-purple-700">0</span>
+    <span class="text-blue-700 font-semibold">for</span> number <span class="text-blue-700 font-semibold">in</span> numbers:
+        total += number  <span class="text-green-700"># Fixed: added singular variable</span>
+    <span class="text-blue-700 font-semibold">return</span> total / len(numbers)</code></pre>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
+                <button class="border border-[#111111] bg-[#FDFDFD] hover:bg-[#111111] hover:text-white py-2 px-3 uppercase tracking-wider font-semibold transition-colors flex items-center justify-center gap-1.5 blueprint-shadow-sm">
+                  <span>📋</span>
+                  <span>COPY FIXED CODE</span>
+                </button>
+                <button class="border border-[#111111] bg-[#111111] text-white hover:bg-[#D94826] hover:border-[#D94826] py-2 px-3 uppercase tracking-wider font-semibold transition-colors flex items-center justify-center gap-1.5 blueprint-shadow-sm">
+                  <span>APPLY TO EDITOR ↵</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- SECTION 04: TAKEAWAY -->
+            <div class="space-y-2 pb-2">
+              <div class="border-b border-[#111111] pb-1">
+                <span class="font-mono font-bold text-xs tracking-widest uppercase text-[#111111]">
+                  04 // TAKEAWAY
+                </span>
+              </div>
+              <div class="bg-[#F5F5F3] border border-[#E6E6E2] p-3 text-xs font-mono text-neutral-700 leading-relaxed">
+                "Plural aur singular variables ka dhyan rakho bhai! Ek 's' ne poore function ki waat laga di 🚀. Always name your loop variables clearly!"
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+
+    <!-- 3. FOOTER STATUS BAR -->
+    <footer class="border-t-2 border-[#111111] bg-[#F5F5F3] px-4 py-2 flex flex-col gap-1 text-[11px] font-mono">
+      <div class="flex flex-wrap items-center justify-between text-neutral-600">
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1.5 text-neutral-900 font-medium">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 inline-block animate-pulse"></span>
+            STATUS: ONLINE (GEMINI 3.5 FLASH-LITE)
+          </span>
+          <span class="text-neutral-400">|</span>
+          <span class="text-neutral-600 hidden sm:inline">ENGINE: GOOGLE GEMINI</span>
+        </div>
+        <div class="text-neutral-800 uppercase tracking-widest font-semibold">
+          CODE ROASTER v3 // LIVE
+        </div>
+      </div>
+      <div class="text-center text-[10px] text-neutral-500 border-t border-[#E6E6E2] pt-1">
+        Made at GDG Nashik Pre-DevFest Workshop
+      </div>
+    </footer>
+
+  </main>
+
+
+  <!-- ======================================================== -->
+  <!-- 05 // DESIGN TOKENS & TAILWIND CSS SPEC SHEET -->
+  <!-- ======================================================== -->
+  <section id="design-tokens-sheet" class="w-full max-w-[1360px] bg-[#FDFDFD] border-2 border-[#111111] blueprint-shadow p-6 mb-12 space-y-8">
+    
+    <div class="border-b-2 border-[#111111] pb-3 flex items-center justify-between">
+      <div>
+        <h2 class="font-display font-bold text-xl uppercase tracking-wider text-[#111111]">
+          Architectural Blueprint Design Tokens & Component System
+        </h2>
+        <p class="font-mono text-xs text-neutral-500 mt-1">
+          Hand-off specification for Next.js 16 + Tailwind CSS v4 implementation.
+        </p>
+      </div>
+      <span class="px-2 py-1 bg-[#111111] text-white font-mono text-xs">TAILWIND v4 SPEC</span>
+    </div>
+
+    <!-- 1. Color Palette Tokens -->
+    <div class="space-y-3">
+      <h3 class="font-mono font-bold text-xs uppercase tracking-widest text-[#111111]">
+        01 // COLOR TOKENS
+      </h3>
+      <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3 font-mono text-xs">
+        
+        <!-- Ink / Frame -->
+        <div class="border border-[#111111] bg-white p-2.5">
+          <div class="h-10 w-full bg-[#111111] mb-2 border border-black"></div>
+          <div class="font-bold">frame / ink</div>
+          <div class="text-neutral-500 text-[10px]">#111111</div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="border border-[#111111] bg-white p-2.5">
+          <div class="h-10 w-full bg-[#F5F5F3] mb-2 border border-[#E6E6E2]"></div>
+          <div class="font-bold">canvas</div>
+          <div class="text-neutral-500 text-[10px]">#F5F5F3</div>
+        </div>
+
+        <!-- Panel -->
+        <div class="border border-[#111111] bg-white p-2.5">
+          <div class="h-10 w-full bg-[#FDFDFD] mb-2 border border-[#E6E6E2]"></div>
+          <div class="font-bold">panel</div>
+          <div class="text-neutral-500 text-[10px]">#FDFDFD</div>
+        </div>
+
+        <!-- Hairline / Subtle -->
+        <div class="border border-[#111111] bg-white p-2.5">
+          <div class="h-10 w-full bg-[#E6E6E2] mb-2 border border-neutral-300"></div>
+          <div class="font-bold">subtle</div>
+          <div class="text-neutral-500 text-[10px]">#E6E6E2</div>
+        </div>
+
+        <!-- Accent -->
+        <div class="border border-[#111111] bg-white p-2.5">
+          <div class="h-10 w-full bg-[#D94826] mb-2 border border-black"></div>
+          <div class="font-bold text-[#D94826]">accent</div>
+          <div class="text-neutral-500 text-[10px]">#D94826</div>
+        </div>
+
+        <!-- Fatal Bug -->
+        <div class="border border-[#111111] bg-white p-2.5">
+          <div class="h-10 w-full bg-[#D94826] mb-2 border border-black"></div>
+          <div class="font-bold text-[#D94826]">fatal</div>
+          <div class="text-neutral-500 text-[10px]">#D94826</div>
+        </div>
+
+        <!-- Code Smell -->
+        <div class="border border-[#111111] bg-white p-2.5">
+          <div class="h-10 w-full bg-[#D97706] mb-2 border border-black"></div>
+          <div class="font-bold text-[#D97706]">code smell</div>
+          <div class="text-neutral-500 text-[10px]">#D97706</div>
+        </div>
+
+        <!-- Optimization -->
+        <div class="border border-[#111111] bg-white p-2.5">
+          <div class="h-10 w-full bg-[#15803D] mb-2 border border-black"></div>
+          <div class="font-bold text-[#15803D]">optimization</div>
+          <div class="text-neutral-500 text-[10px]">#15803D</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 2. Typography Specification -->
+    <div class="space-y-3">
+      <h3 class="font-mono font-bold text-xs uppercase tracking-widest text-[#111111]">
+        02 // TYPOGRAPHY SYSTEM
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+        <div class="border border-[#111111] p-4 bg-[#F5F5F3]">
+          <span class="text-[10px] text-neutral-500 uppercase tracking-widest block mb-1">DISPLAY FONT</span>
+          <div class="font-display font-bold text-2xl text-[#111111] tracking-[0.15em] uppercase mb-2">
+            Space Grotesk
+          </div>
+          <p class="text-neutral-600 text-xs">
+            Used strictly for headings, app title, and key section announcements. Geometric, bold, tracked out.
+          </p>
+        </div>
+        <div class="border border-[#111111] p-4 bg-[#F5F5F3]">
+          <span class="text-[10px] text-neutral-500 uppercase tracking-widest block mb-1">MONOSPACE FONT</span>
+          <div class="font-mono font-bold text-2xl text-[#111111] mb-2">
+            JetBrains Mono
+          </div>
+          <p class="text-neutral-600 text-xs">
+            Used for everything else: code editor, audit cards, buttons, badges, status strips, and body copy.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Component Specs -->
+    <div class="space-y-3">
+      <h3 class="font-mono font-bold text-xs uppercase tracking-widest text-[#111111]">
+        03 // COMPONENT LIBRARY SPEC
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+        
+        <!-- Buttons -->
+        <div class="border border-[#E6E6E2] p-4 space-y-3 bg-[#FDFDFD]">
+          <span class="text-[10px] text-neutral-500 uppercase tracking-wider block">BUTTONS</span>
+          <div>
+            <button class="w-full bg-[#111111] text-white px-3 py-2 font-mono font-bold text-xs tracking-wider uppercase blueprint-shadow-sm mb-2">
+              Primary: ROAST MY CODE
+            </button>
+            <button class="w-full border border-[#111111] bg-white hover:bg-neutral-100 px-3 py-2 font-mono font-semibold text-xs tracking-wider uppercase mb-2">
+              Secondary: COPY CODE
+            </button>
+            <button class="w-full border border-dashed border-[#111111] px-3 py-1.5 text-xs uppercase text-neutral-700">
+              Dashed: + ERROR MESSAGE
+            </button>
+          </div>
+        </div>
+
+        <!-- Badges & Chips -->
+        <div class="border border-[#E6E6E2] p-4 space-y-3 bg-[#FDFDFD]">
+          <span class="text-[10px] text-neutral-500 uppercase tracking-wider block">BADGES & CHIPS</span>
+          <div class="flex flex-wrap gap-2 items-center">
+            <span class="w-6 h-6 bg-[#111111] text-white flex items-center justify-center text-[10px] font-bold">01</span>
+            <span class="bg-[#D94826]/10 text-[#D94826] border border-[#D94826] px-2 py-0.5 text-[10px] font-bold uppercase">
+              FATAL BUG
+            </span>
+            <span class="bg-[#D97706]/10 text-[#D97706] border border-[#D97706] px-2 py-0.5 text-[10px] font-bold uppercase">
+              CODE SMELL
+            </span>
+            <span class="bg-[#15803D]/10 text-[#15803D] border border-[#15803D] px-2 py-0.5 text-[10px] font-bold uppercase">
+              OPTIMIZATION
+            </span>
+            <span class="border border-[#111111] bg-[#F5F5F3] px-2 py-0.5 text-[10px] font-mono">
+              v3
+            </span>
+          </div>
+        </div>
+
+        <!-- Input & Containers -->
+        <div class="border border-[#E6E6E2] p-4 space-y-3 bg-[#FDFDFD]">
+          <span class="text-[10px] text-neutral-500 uppercase tracking-wider block">PANELS & INPUTS</span>
+          <div class="space-y-2">
+            <div class="border-2 border-[#111111] p-2 bg-[#F5F5F3] text-[10px]">
+              2px HARD BORDER + 0 RADIUS
+            </div>
+            <div class="border border-[#E6E6E2] p-2 bg-white text-[10px]">
+              1px HAIRLINE DIVIDER (#E6E6E2)
+            </div>
+            <div class="border-l-4 border-[#D94826] bg-[#F5F5F3] p-2 text-[10px]">
+              ACCENT LEFT STRIPE (ISSUE SNIPPET)
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 4. Tailwind CSS v4 globals.css snippet -->
+    <div class="space-y-3">
+      <h3 class="font-mono font-bold text-xs uppercase tracking-widest text-[#111111]">
+        04 // TAILWIND CSS v4 IMPLEMENTATION CODE (globals.css)
+      </h3>
+      <pre class="bg-[#111111] text-neutral-200 p-4 font-mono text-xs overflow-x-auto leading-5 border border-black"><code>@import "tailwindcss";
+
+@theme inline {
+  --color-frame: #111111;
+  --color-canvas: #F5F5F3;
+  --color-panel: #FDFDFD;
+  --color-subtle: #E6E6E2;
+  --color-accent: #D94826;
+  --color-fatal: #D94826;
+  --color-smell: #D97706;
+  --color-opt: #15803D;
+
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+body {
+  background-color: var(--color-canvas);
+  background-image: 
+    linear-gradient(to right, rgba(17, 17, 17, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 17, 17, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  font-family: var(--font-mono);
+  color: var(--color-frame);
+}</code></pre>
+    </div>
+
+  </section>
+
+  <!-- JAVASCRIPT FOR INTERACTIVE PREVIEW SWITCHING -->
+  <script>
+    function switchScreen(screenId) {
+      const views = ['view-empty', 'view-loading', 'view-error', 'view-results'];
+      const buttons = ['btn-main', 'btn-results', 'btn-loading', 'btn-error', 'btn-tokens'];
+      
+      // Reset button styles
+      buttons.forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          btn.classList.remove('bg-[#111111]', 'text-white');
+          btn.classList.add('bg-[#FDFDFD]', 'text-[#111111]');
+        }
+      });
+
+      // Hide all states
+      views.forEach(v => {
+        const el = document.getElementById(v);
+        if (el) el.classList.add('hidden');
+      });
+
+      const badge = document.getElementById('report-state-badge');
+      const gutter4 = document.getElementById('gutter-line-4');
+      const codeLine4 = document.getElementById('code-line-4');
+
+      if (screenId === 'screen-main') {
+        document.getElementById('view-empty').classList.remove('hidden');
+        document.getElementById('btn-main').classList.add('bg-[#111111]', 'text-white');
+        badge.textContent = 'STATE: EMPTY';
+        badge.className = 'text-[10px] font-mono uppercase px-2 py-0.5 border border-[#111111] bg-[#F5F5F3] text-neutral-600';
+        if (gutter4) gutter4.className = 'text-neutral-400';
+        if (codeLine4) codeLine4.className = 'pl-8';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (screenId === 'screen-results') {
+        document.getElementById('view-results').classList.remove('hidden');
+        document.getElementById('btn-results').classList.add('bg-[#111111]', 'text-white');
+        badge.textContent = 'STATE: RESULTS';
+        badge.className = 'text-[10px] font-mono uppercase px-2 py-0.5 border border-[#111111] bg-[#111111] text-white';
+        if (gutter4) gutter4.className = 'text-[#D94826] font-bold bg-[#D94826]/10 -mr-3 pr-3 border-r-2 border-[#D94826]';
+        if (codeLine4) codeLine4.className = 'pl-8 bg-[#D94826]/10 -mx-3 px-3 border-l-2 border-[#D94826] flex items-center justify-between';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (screenId === 'screen-loading') {
+        document.getElementById('view-loading').classList.remove('hidden');
+        document.getElementById('btn-loading').classList.add('bg-[#111111]', 'text-white');
+        badge.textContent = 'STATE: LOADING';
+        badge.className = 'text-[10px] font-mono uppercase px-2 py-0.5 border border-[#111111] bg-[#111111] text-white';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (screenId === 'screen-error') {
+        document.getElementById('view-error').classList.remove('hidden');
+        document.getElementById('btn-error').classList.add('bg-[#111111]', 'text-white');
+        badge.textContent = 'STATE: ERROR';
+        badge.className = 'text-[10px] font-mono uppercase px-2 py-0.5 border border-[#D94826] bg-[#D94826] text-white';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (screenId === 'screen-tokens') {
+        document.getElementById('btn-tokens').classList.add('bg-[#111111]', 'text-white');
+        document.getElementById('design-tokens-sheet').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function toggleErrorDrawer() {
+      const drawer = document.getElementById('error-drawer');
+      const icon = document.getElementById('error-toggle-icon');
+      if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        icon.textContent = '−';
+      } else {
+        drawer.classList.add('hidden');
+        icon.textContent = '+';
+      }
+    }
+  </script>
+</body>
+</html>
